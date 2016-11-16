@@ -54,7 +54,9 @@
 ## Run and debug filter driver
 1. `Driver Loader` 를 실행하고, Driver Path를 지정하고, Type 을 MiniFilter 로 설정하고, Register Service -> Start Service 버튼을 차례로 클릭한다.
 1. 뭔가 잘 되었다는 메세지만 나오고, 아무런 일이 벌어지지 않으면 잘 된것입니다. 
-1. debugger 에서 실행중인 WinDbg 에서 break 를 걸고 아래 명령을 수행 후 debuggee 실행을 재개하면 수많은 로그 메세지를 확인할 수 있다. 
+1. debugger 에서 실행중인 WinDbg 에서 break 를 걸고 아래 명령을 수행 후 debuggee 실행을 재개하면 수많은 로그 메세지를 확인할 수 있다.
+
+        kd> ed nt!kd_default_mask 0xffffffff
 
 
 
