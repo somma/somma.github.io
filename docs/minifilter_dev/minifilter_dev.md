@@ -36,3 +36,16 @@
     - IRP_MJ_CLOSE  의 postoperation 에서는  context 쿼리 또는 세팅을 할 수 없다. 
     - IRP_MJ_CLEANUP / IRP_MJ_CLOSE 의 preoperation 은 절대 실패를 리턴하지 말아야 한다.
     - IRP_MJ_SHUTDOWN 의 postoperation 은 등록할 수 없다.  
+### Passing an I/O Operation Down the Minifilter Driver Instance Stack
++ FLT_PREOP_SUCCESS_WITH_CALLBACK
+    - preoperation 에서 이걸 리턴하면 filter manager 는 minifilter 의 postoperation callback routine 을 호출해준다.
+    - 만일 postoperation callback routine 을 등록하지 않았다면 assert 를 발생하게 됨(checked build 에서)
++ FLT_PREOP_SUCCESS_NO_CALLBACK
+    - preoperation 에서 이걸 리턴하면 minifilter 의 postoperation callback routine 을 호출하지 않는다. 
++ FLT_PREOP_SYNCHRONIZE
+    - preoperation 에서 이걸 리턴하면 minifilter 의 postoperation callback routine 을 호출한다. 
+    - 이때 filter manager 는 preoperation 과 동일한 thread context, IRQL <= APC_LEVEL 에서 호출해준다.
+    - 만일 postoperation callback routine 을 등록하지 않았다면 assert 를 발생하게 됨(checked build 에서)
+    - IRP based I/O operation 에서 FLT_PREOP_SYNCHRONIZE 를 리턴한다. 이외의 operation type 에서 리턴하면 filter manager 는 FLT_PREOP_SUCCESS_WITH_CALLBACK 과 동일하게 처맇나다. I/O operation 이 IRP based I/O 인지 확인하기 위해서는 `FLT_IS_IRP_OPERATION` 매크로를 이용하면 된다. 
+    - create operation 에서는 filter manager 가 이미 동기화를 하기 때문에 FLT_PREOP_SYNCHRONIZE 를 리턴해서는 안된다.
+    - asynchronous read/write 에 대해서 절대 FLT_PREOP_SYNCHRONIZE 를 리턴해서는 안된다.  
