@@ -1,3 +1,14 @@
+# FLT_STREAM_CONTEXT 와 FLT_STREAMHANDLE_CONTEXT
+
++ STREAM_CONTEXT
+    - file stream 마다 붙일 수 있는 context. 
+    - FILE_OBJECT.FsContext 를 추적하는데 사용. 
+
++ STREAMHANDLE_CONTEXT
+    - 개개의 file open 시 생성되는 file object (I/O 서브시스템이 생성하는)마다 붙일 수 있는 context. 
+    - FILE_OBJECT 를 추적하는데 사용.
+
+
 # File Streams, Stream Contexts, and Per-Stream Contexts
 
 + [File Streams, Stream Contexts, and Per-Stream Contexts](https://msdn.microsoft.com/windows/hardware/drivers/ifs/file-streams--stream-contexts--and-per-stream-contexts)
