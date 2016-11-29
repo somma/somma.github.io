@@ -8,10 +8,11 @@
     - 개개의 file open 시 생성되는 file object (I/O 서브시스템이 생성하는)마다 붙일 수 있는 context. 
     - FILE_OBJECT 를 추적하는데 사용.
 
+## 참고1
++ [osronline](http://www.osronline.com/showThread.cfm?link=66033)
 
-# File Streams, Stream Contexts, and Per-Stream Contexts
-
-+ [File Streams, Stream Contexts, and Per-Stream Contexts](https://msdn.microsoft.com/windows/hardware/drivers/ifs/file-streams--stream-contexts--and-per-stream-contexts)
+## 참고2
++ [MSDN 원문, File Streams, Stream Contexts, and Per-Stream Contexts](https://msdn.microsoft.com/windows/hardware/drivers/ifs/file-streams--stream-contexts--and-per-stream-contexts)
 
 + file stream
 
@@ -41,7 +42,7 @@
     ``per-stream context`` 는 [FSRTL_PER_STREAM_CONTEXT](https://msdn.microsoft.com/library/windows/hardware/ff547357) 구조체를 멤버로 포함하는 
     filter-defined 구조체이다. 필터드라이버는 이 구조체를 file system 이 열어놓은 각각의 file stream 에 대한 정보를 추적하는데 사용한다.   
 
-+ File Ssytem Support for Per-Stream Contexts
++ File Sytem Support for Per-Stream Contexts
 
     Microsoft Windows XP 이후, per-stream context 를 지원하는 파일시스템은 [FSRTL_ADVANCED_FCB_HEADER]()구조체를 포함하는 
     stream context 구조체를 사용해야 한다. 
