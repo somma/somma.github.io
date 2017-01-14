@@ -1,33 +1,46 @@
 
 
-이번 포스트에서는 [CreateFile()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363858(v=vs.85).aspx) API 두번째, 세번째 파라미터에 대해서 설명하고자 합니다.
+이번 포스트에서는 [CreateFile()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363858(v=vs.85).aspx) API 두번째, 세번째 파라미터인 `dwDesiredAccess`, `dwShareMode` 에 대해서 정확히 파악해보고자 합니다.
 
-먼저 퀴즈 나갑니다.
+먼저 퀴즈로 시작해 보겠습니다. 
+
 A 라는 프로세스는 `abc.log` 라른 파일에 데이터를 쓰고, B 라는 프로세스는 해당 파일을 읽어서 화면에 출력하는 코드를 작성한다고 가정합니다.
-A 프로세스는 `abc.log` 파일에 로그를 쓰기 위해 `FILE_GENERIC_WRITE` 접근 권한을 요청하고, B 프로세스가 해당 로그파일을 읽을 수 있도록 `FILE_SHARE_READ` 공유권한을 허용해야 하는건 다들 알고계시겠죠?
+A 프로세스는 `abc.log` 파일에 로그를 쓰기 위해 `FILE_GENERIC_WRITE` 접근 권한을 요청하고, B 프로세스가 해당 로그파일을 읽을 수 있도록 `FILE_SHARE_READ` 공유권한을 넘겨야 한다고 생각하시겠죠?
 ( A 프로세스가 먼저 실행된다고 가정합니다 )
 
 
-A 프로세스의 코드입니다. 
 ```c
-HANDLE fileHandle = CreateFile('abc.log', 
-                               FILE_GENERIC_WRITE,  // 로그를 쓰려면 쓰기 권한으로 파일을 열어야죠.
+// A 프로세스의 코드
+HANDLE fileHandle = CreateFile('abc.log',
+                               FILE_WRITE_DATA,     // 로그를 쓰려면 쓰기 권한으로 파일을 열어야죠.
                                FILE_SHARE_READ,     // B 프로세스가 해당 파일을 읽어야 하니까 `공유 읽기` 를.
                                ...
                                ...);
-```
 
 
-B 프로세스의 코드입니다. 
-```c
-HANDLE fileHandle = CreateFile('abc.log', 
-                               FILE_GENERIC_READ,   // 로그 파일을 읽어야 하니까
+// B 프로세스의 코드
+HANDLE fileHandle = CreateFile('abc.log',
+                               FILE_READ_DATA,      // 로그 파일을 읽어야 하니까
                                FILE_SHARE_READ,     // A 프로세스의 코드랑 그냥 같은걸로???
                                ...
                                ...);
 ```
 
-자, 이 코드가 잘 동작할까요? 바로 무엇이 문제인지 대답하실 수 있다면 더이상 읽지 않으셔도 됩니다. 
+..
+
+..
+
+..
+
+..
+
+..
+
+..
+
+..
+
+이 코드는 생각대로, 잘 동작하지 않습니다. 바로 무엇이 문제인지 대답하실 수 있다면 더이상 읽지 않으셔도 됩니다.
 
 ..
 
@@ -40,6 +53,10 @@ HANDLE fileHandle = CreateFile('abc.log',
 ..
 
 ..
+
+..
+
+
 
 [CreateFile()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363858(v=vs.85).aspx) 함수는 Windows API 에서 가장 많이 사용되는 API 중에 하나이고, 가장 어렵고, 가장 많은것을 알아야 하는 API 중 하나입니다. 이 함수는 여러개의 파라미터를 입력으로 받는데, 그 중 두번째와 세번째 파라미터에 대해서 설명하려고 합니다.
 
@@ -56,9 +73,7 @@ HANDLE WINAPI CreateFile(
 ```
 
 
-두번째 `dwDesiredAccess` 는 해당 파일에 어떤 권한으로 접근을 하려고 하는지를 명시합니다 (읽기를 할것인지, 쓰기를 할것인지, 삭제를 할것인지). 세번째 `dwShareMode` 는 해당 파일에 접근하고있는 동안 다른 프로세스가 해당 파일에 접근하고자 하는 경우 어떤 권한을 허용할지를 명시합니다 (읽기를 허용할지, 쓰기를 허용할지, 삭제를 용할지).
-
-이게 별것 아닌것 처럼 보이지만, 자칫하면 실수하기 쉽기때문에 오늘 확실하게 정리하죠.
+두번째 `dwDesiredAccess` 는 해당 파일에 어떤 권한으로 접근을 하려고 하는지를 명시합니다 (읽기를 할것인지, 쓰기를 할것인지, 삭제를 할것인지). 세번째 `dwShareMode` 는 해당 파일에 접근하고있는 동안 다른 프로세스가 해당 파일에 접근하고자 하는 경우 어떤 권한을 허용할지를 명시합니다 (읽기를 허용할지, 쓰기를 허용할지, 삭제를 용할지). MSDN 에는 뭐 그닥 그렇게 자세히 설명이 나오지는 않습니다. 
 
 Windows Kernel 은 CreateFile 요청이 발생하면 다양하고, 복잡한 함수호출을 통해서 특정 파일에 대한 오브젝트(FILE_OBJECT)를 생성하거나 이미 생성된 FILE_OBJECT 에 접근합니다. 
 FILE_OBJECT 는 Windows 커널이 파일을 표현하기 위해서 커널내부적으로 사용하는 자료구조이며, 특정프로세스에 종속되지 않는 커널전체에서 공유되는 자원입니다. 매번 파일을 열고자 할때마다 새롭게 FILE_OBJECT 를 생성하면 효율적이지 못할테니까요.
@@ -95,7 +110,7 @@ FILE_OBJECT.SharedWrite = (BOOLEAN) ((DesiredShareAccess & FILE_SHARE_WRITE) != 
 FILE_OBJECT.SharedDelete = (BOOLEAN) ((DesiredShareAccess & FILE_SHARE_DELETE) != 0);
 ```
 
-Windows kernel 은 유효성 여부를 검사와 해당 FILE_OBJECT 에 대한 요청들을 추적하기 위해서 `SHARE_ACCESS`라는 자료구조를 사용하는데, windbg 를 통해서 확인할 수 있습니다. 
+Windows kernel 은 유효성 여부를 검사와 해당 FILE_OBJECT 에 대한 요청들을 추적하기 위해서 `SHARE_ACCESS`라는 자료구조를 사용하는데, windbg 를 통해서 확인할 수 있습니다. FILE_OBJECT 접근에 성공하면 각 필드를 업데이트 합니다. 
 
 ```text
 kd> dt nt!share_access
@@ -128,41 +143,40 @@ typedef struct _SHARE_ACCESS
 `SHARE_ACCESS` 와 `dwDesiredAccess`, `dwShareMode` 간의 관계는 아래와 같이 정리 할 수 있습니다. 
 
 ```text
-규칙 #1 
+[규칙 #1]
+`SHARE_ACCESS.Shared[Read|Write|Delete]` 가 OpenCount 보다 작고,
+`[Read|Write|Delete]` 권한을 요청하는 경우 SHARE VIOLATION.
 
-`SHARE_ACCESS.Shared[Read|Write|Delete]` 가 OpenCount 보다 작고, `[Read|Write|Delete]` 권한을 요청하는 경우 SHARE VIOLATION.
+기존에 생성된 공유권한이 없다면 공유권한과 매칭되는 접근권한을 요청 할 수 없습니다.
+예를 들어 이전 호출 중 `FILE_SHARE_READ` 공유권한 요청이 없었다면, `FILE_READ_DATA` 접근 권한을 요청할 수 없다.
+
+[규칙 #2]
+`SHARE_ACCESS.[Readers|Writers|Deleters]` 가 0 이 아닌데,
+요청 된 공유권한이 `FILE_SHARE_[READ|WRITE|DELETE]` 가 0 인 경우 SHARE VIOLATION.
+
+기존에 요청된 접근권한과 매칭되는 공유권한이 현재 요청에 없다면 요청에 실패한다.
+예를 들어 이전 호출 중 `FILE_READ_DATA` 접근권한 요청이 있었다면, 현재 요청에는 반드시 `FILE_SHARE_READ` 공유권한이 포함되어 있어야 한다.
 ```
 
-    기존에 생성된 ShareAccess 가 없다면 ShareAccess 와 일치하는 Access 요청을 할 수 없다.     
-    예를 들어 이전 호출 중 성공한 `FILE_SHARE_READ` 가 없었다면 `FILE_READ_DATA` 요청을 할 수 없다.
-
-```text
-규칙 #2 
-
-`SHARE_ACCESS.[Readers|Writers|Deleters]` 가 0 이 아니고, `[ShareRead|ShareWrite|ShareDelte]` 가 0 이 아닌경우 SHARE VIOLATION.
-```
-    기존에 생성된 ShareAccess 가 있는데, 해당 ShareAccess 가 현재 요청에 없다면 요청에 실패한다.    
-    예를 들어 이전 호출 중 성공한 `FILE_SHARE_READ` 가 있는데, 현재 요청에 `FILE_SHARE_READ` 가 없다면 공유 위반이다. 
-
-앞의 퀴즈를 다시 보면 이해가 되실 겁니다. 
-
-아래의 코드는 `ERROR_SHARING_VIOLATION` 를 리턴하게 될 것입니다.
+앞에서 보여드렸던 아래의 코드는 `ERROR_SHARING_VIOLATION` 를 리턴하게 됩니다.
 
 ```c
 // A 프로세스의 코드
 HANDLE fileHandle = CreateFile('abc.log',
-                               FILE_GENERIC_WRITE,  // 로그를 쓰려면 쓰기 권한으로 파일을 열어야죠.
+                               FILE_WRITE_DATA,     // 로그를 쓰려면 쓰기 권한으로 파일을 열어야죠.
                                FILE_SHARE_READ,     // B 프로세스가 해당 파일을 읽어야 하니까 `공유 읽기` 를.
                                ...
                                ...);
 
-// B 프로세스의 코드입니다. 
+// B 프로세스의 코드
 HANDLE fileHandle = CreateFile('abc.log',
-                               FILE_GENERIC_READ,   // 로그 파일을 읽어야 하니까
+                               FILE_READ_DATA,      // 로그 파일을 읽어야 하니까
                                FILE_SHARE_READ,     // A 프로세스의 코드랑 그냥 같은걸로???
                                ...
                                ...);
 ```
+
+왜 그럴까요?
 
 A 프로세스의 코드가 실행되면 해당 FILE_OBJECT 의 상태는 아래와 같습니다. 
 
@@ -178,11 +192,31 @@ SHARE_ACCESS.SharedWrite = 0;
 SHARE_ACCESS.SharedDelete = 0;
 ```
 
-B 프로세스가 실행되는 시점에 공유위반 검사를 해보면 
+B 프로세스의 코드가 실행되는 시점에 공유위반 검사를 해보면
 
-1. `SHARE_ACCESS.SharedRead < 0` 조건이 거짓이고, `FILE_GENERIC_READ` 권한을 요청했으므로 공유위반이 아닙니다. 
-2. 
+규칙 #1, `SHARE_ACCESS.SharedRead < SHARE_ACCESS.OpenCount` 조건이 거짓이므로 공유위반 아님
+규칙 #2, `SHARE_ACCESS.Writers != 0` 이고, 요청된 공유모드가 FILE_SHARE_WRITE 가 0 입니다. (FILE_SHARE_READ 만 지정했으니까요)
 
+즉 [규칙 #2] 에 의해서 공유위반입니다. 
 
+따라서 위의 코드는 아래처럼 작성해야 합니다. 
 
-shadow handle 을 생성하고자 하는 경우 `ShareRead|ShareWrite|ShareDelete` 공유권한으로 파일을 열어두면 이후 모든 공유권한으로 요청이 와도 성공할 거라고 착각 할 수 있는데, 실제는 그렇지 않다. 
+```c
+// A 프로세스의 코드
+HANDLE fileHandle = CreateFile('abc.log',
+                               FILE_WRITE_DATA,     // 로그를 쓰려면 쓰기 권한으로 파일을 열어야죠.
+                               FILE_SHARE_READ,     // B 프로세스가 해당 파일을 읽어야 하니까 `공유 읽기` 를.
+                               ...
+                               ...);
+
+// B 프로세스의 코드
+HANDLE fileHandle = CreateFile('abc.log',
+                               FILE_READ_DATA,      // 로그 파일을 읽어야 하니까
+                               FILE_SHARE_READ | FILE_SHARE_WRITE,
+                               ...
+                               ...);
+```
+
+사실 상식적으로 생각해보면 굉장히 당연한 규칙입니다만, 코드를 말로 풀어서 설명하다보니 쓸데없이 길어진 것 같습니다. 
+의외로 예제로 보여드린 코드와 유사한 실수를 저지르는 경우가 많고, 정확히 규칙을 모르는 분들이 많은것 같습니다 (저도 정확히 모르고 대충 썼습니다).
+매번 정확히 한번 따져봐야지 생각만 하고 미루다가 드디어 정확히 알게된것 같아 홀가분하네요. 
