@@ -58,7 +58,7 @@ HANDLE fileHandle = CreateFile('abc.log',
 
 
 
-[CreateFile()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363858(v=vs.85).aspx) 함수는 Windows API 에서 가장 많이 사용되는 API 중에 하나이고, 가장 어렵고, 가장 많은것을 알아야 하는 API 중 하나입니다. 이 함수는 여러개의 파라미터를 입력으로 받는데, 그 중 두번째와 세번째 파라미터에 대해서 설명하려고 합니다.
+[CreateFile()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363858(v=vs.85).aspx) 함수는 Windows API 에서 가장 많이 사용되는 API 중에 하나이고, 가장 어렵고, 가장 많은것을 알아야 하는 API 중 하나입니다. 이 함수는 여러개의 파라미터를 필요로 합니다.
 
 ```c
 HANDLE WINAPI CreateFile(
@@ -73,7 +73,7 @@ HANDLE WINAPI CreateFile(
 ```
 
 
-두번째 `dwDesiredAccess` 는 해당 파일에 어떤 권한으로 접근을 하려고 하는지를 명시합니다 (읽기를 할것인지, 쓰기를 할것인지, 삭제를 할것인지). 세번째 `dwShareMode` 는 해당 파일에 접근하고있는 동안 다른 프로세스가 해당 파일에 접근하고자 하는 경우 어떤 권한을 허용할지를 명시합니다 (읽기를 허용할지, 쓰기를 허용할지, 삭제를 용할지). MSDN 에는 뭐 그닥 그렇게 자세히 설명이 나오지는 않습니다. 
+두번째 `dwDesiredAccess` 는 해당 파일에 어떤 권한으로 접근을 하려고 하는지를 명시합니다 (읽기를 할것인지, 쓰기를 할것인지, 삭제를 할것인지). 세번째 `dwShareMode` 는 해당 파일에 접근하고있는 동안 다른 프로세스가 해당 파일에 접근하고자 하는 경우 어떤 권한을 허용할지를 명시합니다 (읽기를 허용할지, 쓰기를 허용할지, 삭제를 용할지). 
 
 Windows Kernel 은 CreateFile 요청이 발생하면 다양하고, 복잡한 함수호출을 통해서 특정 파일에 대한 오브젝트(FILE_OBJECT)를 생성하거나 이미 생성된 FILE_OBJECT 에 접근합니다. 
 FILE_OBJECT 는 Windows 커널이 파일을 표현하기 위해서 커널내부적으로 사용하는 자료구조이며, 특정프로세스에 종속되지 않는 커널전체에서 공유되는 자원입니다. 매번 파일을 열고자 할때마다 새롭게 FILE_OBJECT 를 생성하면 효율적이지 못할테니까요.
@@ -194,8 +194,8 @@ SHARE_ACCESS.SharedDelete = 0;
 
 B 프로세스의 코드가 실행되는 시점에 공유위반 검사를 해보면
 
-규칙 #1, `SHARE_ACCESS.SharedRead < SHARE_ACCESS.OpenCount` 조건이 거짓이므로 공유위반 아님
-규칙 #2, `SHARE_ACCESS.Writers != 0` 이고, 요청된 공유모드가 FILE_SHARE_WRITE 가 0 입니다. (FILE_SHARE_READ 만 지정했으니까요)
++ 규칙 #1, `SHARE_ACCESS.SharedRead < SHARE_ACCESS.OpenCount` 조건이 거짓이므로 공유위반 아님
++ 규칙 #2, `SHARE_ACCESS.Writers != 0` 이고, 요청된 공유모드가 FILE_SHARE_WRITE 가 0 입니다. (FILE_SHARE_READ 만 지정했으니까요)
 
 즉 [규칙 #2] 에 의해서 공유위반입니다. 
 
