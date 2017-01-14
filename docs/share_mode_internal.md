@@ -58,7 +58,7 @@ HANDLE fileHandle = CreateFile('abc.log',
 
 
 
-[CreateFile()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363858(v=vs.85).aspx) 함수는 Windows API 에서 가장 많이 사용되는 API 중에 하나이고, 가장 어렵고, 가장 많은것을 알아야 하는 API 중 하나입니다. 이 함수는 여러개의 파라미터를 필요로 합니다.
+[CreateFile()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363858(v=vs.85).aspx) 함수는 Windows API 에서 가장 많이 사용되는 API 중에 하나이고, 가장 어렵고, 가장 많은것을 알아야 하는 API 중 하나입니다.
 
 ```c
 HANDLE WINAPI CreateFile(
