@@ -1,11 +1,11 @@
 
 
-이번 포스트에서는 [CreateFile()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363858(v=vs.85).aspx) API 두번째, 세번째 파라미터인 `dwDesiredAccess`, `dwShareMode` 에 대해서 정확히 파악해보고자 합니다.
+이 글에서는 [CreateFile()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363858(v=vs.85).aspx) API의 두번째, 세번째 파라미터인 `dwDesiredAccess`, `dwShareMode` 에 대해서 정확히 파악해보고자 합니다.
 
 먼저 퀴즈로 시작해 보겠습니다. 
 
-A 라는 프로세스는 `abc.log` 라른 파일에 데이터를 쓰고, B 라는 프로세스는 해당 파일을 읽어서 화면에 출력하는 코드를 작성한다고 가정합니다.
-A 프로세스는 `abc.log` 파일에 로그를 쓰기 위해 `FILE_GENERIC_WRITE` 접근 권한을 요청하고, B 프로세스가 해당 로그파일을 읽을 수 있도록 `FILE_SHARE_READ` 공유권한을 넘겨야 한다고 생각하시겠죠?
+A 라는 프로세스는 `abc.log` 파일에 데이터를 쓰고, B 라는 프로세스는 해당 파일을 읽어서 화면에 출력하는 코드를 작성한다고 가정합니다.
+A 프로세스는 `abc.log` 파일에 데이터를 쓰기 위해 `FILE_GENERIC_WRITE` 접근 권한을 요청하고, B 프로세스가 해당 로그파일을 읽을 수 있도록 `FILE_SHARE_READ` 공유권한을 요청합니다. 
 ( A 프로세스가 먼저 실행된다고 가정합니다 )
 
 
@@ -40,7 +40,7 @@ HANDLE fileHandle = CreateFile('abc.log',
 
 ..
 
-이 코드는 생각대로, 잘 동작하지 않습니다. 바로 무엇이 문제인지 대답하실 수 있다면 더이상 읽지 않으셔도 됩니다.
+이 코드는 생각대로, 잘 동작하지 않습니다. 바로 무엇이 문제인지 대답하실 수 있다면 더이상 이 글을 읽지 않으셔도 됩니다.
 
 ..
 
@@ -58,7 +58,7 @@ HANDLE fileHandle = CreateFile('abc.log',
 
 
 
-[CreateFile()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363858(v=vs.85).aspx) 함수는 Windows API 에서 가장 많이 사용되는 API 중에 하나이고, 가장 어렵고, 가장 많은것을 알아야 하는 API 중 하나입니다.
+[CreateFile()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363858(v=vs.85).aspx) 함수는 Windows API 중 가장 많이 사용되는 API 중 하나이고, 가장 어렵고, 가장 많은것을 알아야 하는 API 중 하나입니다.
 
 ```c
 HANDLE WINAPI CreateFile(
@@ -148,14 +148,14 @@ typedef struct _SHARE_ACCESS
 `[Read|Write|Delete]` 권한을 요청하는 경우 SHARE VIOLATION.
 
 기존에 생성된 공유권한이 없다면 공유권한과 매칭되는 접근권한을 요청 할 수 없습니다.
-예를 들어 이전 호출 중 `FILE_SHARE_READ` 공유권한 요청이 없었다면, `FILE_READ_DATA` 접근 권한을 요청할 수 없다.
+예를 들어 이전 호출 중 `FILE_SHARE_READ` 공유권한 요청이 없었다면, `FILE_READ_DATA` 접근 권한을 요청할 수 없습니다.
 
 [규칙 #2]
 `SHARE_ACCESS.[Readers|Writers|Deleters]` 가 0 이 아닌데,
 요청 된 공유권한이 `FILE_SHARE_[READ|WRITE|DELETE]` 가 0 인 경우 SHARE VIOLATION.
 
-기존에 요청된 접근권한과 매칭되는 공유권한이 현재 요청에 없다면 요청에 실패한다.
-예를 들어 이전 호출 중 `FILE_READ_DATA` 접근권한 요청이 있었다면, 현재 요청에는 반드시 `FILE_SHARE_READ` 공유권한이 포함되어 있어야 한다.
+기존에 요청된 접근권한과 매칭되는 공유권한이 현재 요청에 없다면 요청에 실패합니다.
+예를 들어 이전 호출 중 `FILE_READ_DATA` 접근권한 요청이 있었다면, 현재 요청에는 반드시 `FILE_SHARE_READ` 공유권한이 포함되어 있어야 합니다.
 ```
 
 앞에서 보여드렸던 아래의 코드는 `ERROR_SHARING_VIOLATION` 를 리턴하게 됩니다.
