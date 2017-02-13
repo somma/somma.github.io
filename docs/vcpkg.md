@@ -18,6 +18,11 @@ https://github.com/Microsoft/vcpkg
     - x86 windows dynamic/static, x64 windows dynamic/static
     - `> vcpkg install boost:x86-windows boost:x86-windows-static boost:x64-windows boost:x64-windows-static`
 
++ curl 설치
+    - `> vcpkg install curl:x86-windows curl:x86-windows-static curl:x64-windows curl:x64-windows-static`
++ sqlite 설치 
+    - `> vcpkg install sqlite3:x86-windows sqlite3:x86-windows-static sqlite3:x64-windows sqlite3:x64-windows-static`
+
 ## static link 설정
 + default 가 md (using dll) 로 링크되는데, 관련 설명은 있는데, 어떻게 하라는것인지 잘 모르겠음
     - [vcpkg-updates-static-linking-is-now-available](https://blogs.msdn.microsoft.com/vcblog/2016/11/01/vcpkg-updates-static-linking-is-now-available/)
