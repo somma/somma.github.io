@@ -1,6 +1,6 @@
 # *FLTFL_OPERATION_REGISTRATION_SKIP_PAGING_IO* 플래그를 사용하는 이유
 
-[delete 미니필터 샘플](https://github.com/Microsoft/Windows-driver-samples/blob/master/filesys/miniFilter/delete/delete.c) 을 보면 아래와 같이 `IRP_MJ_SET_INFORMATION` 콜백 핸들러를 등록할때 `FLTFL_OPERATION_REGISTRATION_SKIP_PAGING_IO` 를 사용하는 것을 확인할 수 있다. 
+[delete 미니필터 샘플](https://github.com/Microsoft/Windows-driver-samples/blob/master/filesys/miniFilter/delete/delete.c) 을 보면 아래와 같이 `IRP_MJ_SET_INFORMATION` 콜백 핸들러를 등록할 때 `FLTFL_OPERATION_REGISTRATION_SKIP_PAGING_IO` 를 사용하는 것을 확인할 수 있다. 
 
         CONST FLT_OPERATION_REGISTRATION Callbacks[] = {
             ...
