@@ -19,11 +19,11 @@ pycharm 사용시 project interpreter 를 `c:\work.pydata\env\python.exe` 로 �
 
 ## ipython 소개
 
-+ qt 기반 콘솔 실행하기
+* qt 기반 콘솔 실행하기
 
         ipython qtconsole --pylab=inline
 
-+ ipython 을 matplotlib 과 함께 사용하기
+* ipython 을 matplotlib 과 함께 사용하기
 
         ipython --pylab
 
@@ -31,25 +31,25 @@ pycharm 사용시 project interpreter 를 `c:\work.pydata\env\python.exe` 로 �
 
     `\env\Lib\site-packages\matplotlib\font_manager.py` 내 `win32InstalledFonts()` 함수를 아래처럼 수정해 주면 잘 됨
 
-                key, direc, any = winreg.EnumValue( local, j)
-                if not is_string_like(direc):
-                    continue
-                if not os.path.dirname(direc):
-                    direc = os.path.join(directory, direc)
-                direc = direc.split('\0', 1)[0]
+            key, direc, any = winreg.EnumValue( local, j)
+            if not is_string_like(direc):
+                continue
+            if not os.path.dirname(direc):
+                direc = os.path.join(directory, direc)
+            direc = direc.split('\0', 1)[0]
 
 
 ### 명령어 및 단축키
 
-+ %run
+* %run
 
-+ Ctrl + [P | UP], Ctrl + [N | DOWN]
+* Ctrl + [P | UP], Ctrl + [N | DOWN]
     이전에 실행했던 명령어 탐색
 
-+ Ctrl + R
+* Ctrl + R
     이전에 실행했던 명령어 매칭
 
-+ !쉘명령어
+* !쉘명령어
     쉘명령어를 실행한다.
 
         In [13]: share = !net share | findstr dbg
@@ -57,7 +57,7 @@ pycharm 사용시 project interpreter 를 `c:\work.pydata\env\python.exe` 로 �
         ['dbg          C:\\dbg                          ']
         In [15]:
 
-+ %bookmark
+* %bookmark
 
     디렉토리 북마크 설정 (ipython 이 종료되어도 계속 유지 됨)
 
@@ -71,3 +71,11 @@ pycharm 사용시 project interpreter 를 `c:\work.pydata\env\python.exe` 로 �
         In [25]: %bookmark -l
         Current bookmarks:
         dn -> c:/Users/somma/Downloads/
+
+* %debug
+
+    디버거 실행, u/d 명령으로 콜스택을 이동할 수 있음
+
+
+
+
