@@ -5,7 +5,7 @@ https://github.com/Microsoft/vcpkg
 ## Quick start
 
 + `c:\work.vcpkg` 에 clone 한다. 
-+ `C:\work.vcpkg> powershell -exec bypass scripts\bootstrap.ps1` 실행하면 `vcpkg.exe` 가 생성됨
++ `.\bootstrap-vcpkg.bat` 을 실행, `vcpkg.exe` 를 생성한다. 
 + `vcpkg.exe install curl` 명령으로 패키지 인스톨
 + `vcpkg integrate install` 명령으로 사용가능하게 함 (최초 실행시 관리자 권한 필요)
 
@@ -41,7 +41,7 @@ https://github.com/Microsoft/vcpkg
 
 + 개별 프로젝트의 설정 `.vcxproj` 파일을 편집하는 방법
 
-`Global` 아래에 내용을 추가한다. 
+`Globals` 아래에 내용을 추가한다. 
 
     ```xml
     <PropertyGroup Label="Globals">
