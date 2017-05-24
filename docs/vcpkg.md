@@ -88,36 +88,16 @@ vcpkg 는 기본으로 /MD (Multi Threaded DLL) 로 라이브러리를 빌드하
 
 저는 아래 처럼 프로젝트의 설정파일을 직접 편집합니다. 편한 텍스트 에디터를 이용해서 `.vcxproj` 파일을 열고, `Globals` 아래에 내용을 추가합니다. vcpkg 로 패키지를 설치하면 `vcpkg-root\installed\x64-windows`, `vcpkg-root\installed\x64-windows-static` 등의 경로에 패키지가 설치되는데 이 경로를 강제로 지정하는 것입니다. Visual Studio 에서 사용하는 `VcpkgRoot` 환경변수를 바꿔치기 해주는 것이지요. :-)
 
-    ```xml
-    <PropertyGroup Label="Globals">
-        <ProjectGuid>{0CB511FD-3E50-4548-A4F2-91D55B983656}</ProjectGuid>
-        <Keyword>Win32Proj</Keyword>
-        <RootNamespace>_MyLib_test</RootNamespace>
-        <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
-    </PropertyGroup>
-
-    <!-- vcpkg, static link 용 설정 -->
-    <PropertyGroup Condition="'$(Platform)'=='Win32'">
-        <VcpkgTriplet>x86-windows-static</VcpkgTriplet>
-        <VcpkgRoot>c:\work.vcpkg\installed\$(VcpkgTriplet)\</VcpkgRoot>
-        <VcpkgEnabled>true</VcpkgEnabled>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Platform)'=='x64'">
-        <VcpkgTriplet>x64-windows-static</VcpkgTriplet>
-        <VcpkgRoot>c:\work.vcpkg\installed\$(VcpkgTriplet)\</VcpkgRoot>
-        <VcpkgEnabled>true</VcpkgEnabled>
-    </PropertyGroup>
-
-    ```
+![vcxproj](img/vcpkg_vcxproj.png)
 
 
-## curl 라이브러리 문제 해결하기 
+## curl 라이브러리 문제 해결하기
 
 curl 라이브러리는 아주 많은 application network protocol 구현을 제공하는 라이브러리입니다. 디폴트 동작방식인 `/MD` 라면 추가적인 설정이 필요없지만 static link 를 사용하는 경우 추가적인 설정이 필요합니다. 우선 static 링크를 사용하기 위해서 c/c++ -> Runtime Library 를 `/MT` 로 변경합니다.
 
 ![set_mt](img/vcpkg_curl_1.png)
 
-`vcxproj` 파일도 static 버전을 참조할 수 있도록 수정합니다. 
+`vcxproj` 파일도 static 버전을 참조할 수 있도록 수정합니다.
 
 ![set_vcxproj](img/vcpkg_curl_2.png)
 
