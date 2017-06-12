@@ -68,6 +68,7 @@ vcpkg 를 사용하려면 [github](https://github.com/Microsoft/vcpkg) 을 clone
     >vcpkg install curl:x86-windows curl:x86-windows-static curl:x64-windows curl:x64-windows-static
     >vcpkg install sqlite3:x86-windows sqlite3:x86-windows-static sqlite3:x64-windows sqlite3:x64-windows-static
     >vcpkg install jsoncpp:x86-windows jsoncpp:x86-windows-static jsoncpp:x64-windows jsoncpp:x64-windows-static
+    >vcpkg install gtest:x86-windows gtest:x86-windows-static gtest:x64-windows gtest:x64-windows-static
 
 설치된 패키지는 Visual Studio 에서 별다른 설정을 하지 않아도 바로 사용가능합니다.
 
