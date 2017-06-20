@@ -15,7 +15,9 @@
 
   + `EFF-1.0` 패키지내 install guide 대로 하면 한방에 설치 됨 (`eff-linux install`)
 
-## SDK 개발을 위한 기본 패키지 설치
+## dslink sdk 개발 환경 설정
+
+linux 에 모든 소스코드를 저장한다. samba 를 이용해서 windows 에서 linux 에 저장된 소스코드를 수정/분석하고, 빌드 및 디버깅은 linux 에서 진행한다. 
   
 ### 컴파일 툴체인 설치
       
@@ -54,12 +56,13 @@ samba 에서 사용할 계정의 패스워드를 설정한다.
 
       vmuser@ubuntu:~$ sudo service smbd restart
 
-Windows 환경에서 `net use` 등의 명령으로 네트워크 공유를 볼륨으로 매핑해서 사용할 수 있다. 
+Windows 환경에서 `net use` 등의 명령으로 네트워크 공유를 볼륨으로 매핑해서 소스 코드 인텔리센스 및 심볼매칭이 가능한 에디터(예. Visual studio code, Sublime text)등을 이용해서 코드를 수정하면 된다.
 
       C:\Users\unsor>net use z: \\10.10.10.130\work.eff
       '10.10.10.130'의 사용자 이름 입력: vmuser
       10.10.10.130의 암호 입력:
       명령을 잘 실행했습니다.
+
 
 ### cloning source code
 
@@ -70,7 +73,46 @@ Windows 환경에서 `net use` 등의 명령으로 네트워크 공유를 볼륨
       $ git clone https://github.com/somma/dslink-c-iec61850
 
 
-## Visual studio code
+
+
+
+## 리눅스에서 Kdevelop IDE 사용하기 
+
+### IDE 설치 
+      
+      $ sudo apt-get install kdevelop
+
+### 빌드       
+
+`./tools/build.sh` 를 사용하지 않기 위해 `sdk-dslink-c\CMakeList.txt` 의 시작 부분을 아래처럼 수정한다.
+
+    cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
+    project(sdk_dslink_c C)
+
+    set(DSLINK_BUILD_EXAMPLES ON)
+    set(DSLINK_BUILD_BROKER ON)
+
+`kdevelop IDE > Project > Open/Import project` 를 통해 `sdk-dslink-c\CMakeList.txt` 를 선택한다. 
+
+### 실행
+
++ exmple\requester
+
+      vmuser@ubuntu:~/work.dslink_sdk/sdk-dslink-c/build$ ./requester -b https://localhost:8443/conn
+      2017-06-18 07:18:09 WARN [dslink] - Failed to load dslink.json: unable to open dslink.json: No such file or directory
+      2017-06-18 07:18:09 WARN [dslink] - Failed to load dslink.json: unable to open dslink.json: No such file or directory
+      2017-06-18 07:18:09 INFO [main] - Initialized!
+      2017-06-18 07:18:09 INFO [dslink] - Successfully connected to the broker
+      2017-06-18 07:18:09 INFO [main] - Connected!
+
+### 디버깅
+Projects -> build target 의 컨텍스트 메뉴를 통해 디버깅 가능함
+
+![debug](img/kdevelop.png)
+
+
+
+## 리눅스에서 Visual studio code 사용하기
 
 코드 에디팅, 빌드 설정하기가 매우 자유롭고 좋지만, 디버그에서 심볼/소스 매칭을 어떻게 하는지 모르겠음. 디버깅 환경이 kdevelop 이 더 편한거 같아서 더이상 시도 하지 않았으나 기록을 위해 남겨둠.
 
@@ -129,41 +171,7 @@ Windows 환경에서 `net use` 등의 명령으로 네트워크 공유를 볼륨
 
 
 
-## Kdevelop IDE
-
-### IDE 설치 
-      
-      $ sudo apt-get install kdevelop
-
-### 빌드       
-
-`./tools/build.sh` 를 사용하지 않기 위해 `sdk-dslink-c\CMakeList.txt` 의 시작 부분을 아래처럼 수정한다.
-
-    cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
-    project(sdk_dslink_c C)
-
-    set(DSLINK_BUILD_EXAMPLES ON)
-    set(DSLINK_BUILD_BROKER ON)
-
-`kdevelop IDE > Project > Open/Import project` 를 통해 `sdk-dslink-c\CMakeList.txt` 를 선택한다. 
-
-### 실행
-
-+ exmple\requester
-
-      vmuser@ubuntu:~/work.dslink_sdk/sdk-dslink-c/build$ ./requester -b https://localhost:8443/conn
-      2017-06-18 07:18:09 WARN [dslink] - Failed to load dslink.json: unable to open dslink.json: No such file or directory
-      2017-06-18 07:18:09 WARN [dslink] - Failed to load dslink.json: unable to open dslink.json: No such file or directory
-      2017-06-18 07:18:09 INFO [main] - Initialized!
-      2017-06-18 07:18:09 INFO [dslink] - Successfully connected to the broker
-      2017-06-18 07:18:09 INFO [main] - Connected!
-
-### 디버깅
-Projects -> build target 의 컨텍스트 메뉴를 통해 디버깅 가능함
-
-![debug](img/kdevelop.png)
-
-### Build sdlink-c-iec61850 
+## Build sdlink-c-iec61850 
 
 `sdk-dslink-c` 와 동일하게 `kdevelop > Project > Open/Import project` 를 통해 `dslink-c-iec61850\CMakeList.txt` 를 선택하고 빌드하면 된다.
 `dslink-c-iec61850\CMakeList.txt` 는 `sdk-dslink-c` 를 `dslink-c-iec61850\dslink` 아래에서 찾아 `sdk-dslink-c` 의 `sdk_dslink_c-static` 타겟을 빌드하고, 빌드한 라이브러리를 링크하기 때문에, `sdk-dslink-c dslink` 경로를 `dslink-c-iec61850\dslink` 에 심볼릭 링크를 걸어준다. 
@@ -184,9 +192,4 @@ Projects -> build target 의 컨텍스트 메뉴를 통해 디버깅 가능함
       -rw-rw-r--  1 vmuser vmuser   25 Jun 18 07:15 README.md
       drwxrwxr-x  2 vmuser vmuser 4096 Jun 18 07:15 src/
       vmuser@ubuntu:~/work.dslink_sdk/dslink-c-iec61850$ 
-
-
-
-
-
 
