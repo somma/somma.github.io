@@ -15,13 +15,12 @@
 
   + `EFF-1.0` 패키지내 install guide 대로 하면 한방에 설치 됨 (`eff-linux install`)
 
-## sdk dslink c
+## SDK 개발을 위한 기본 패키지 설치
   
   + build 환경구성 
-        
+      
         $ sudo apt-get build-essential
-        $ sudo apt-get install kdevelop
-
+        
   + cloning source code
 
         $ git clone https://github.com/IOT-DSA/sdk-dslink-c
@@ -30,7 +29,74 @@
         $ git clone https://github.com/somma/sdk-dslink-c
         $ git clone https://github.com/somma/dslink-c-iec61850
   
-## Build sdk-dslink-c
+
+## Visual studio code
+
+코드 에디팅, 빌드 설정하기가 매우 자유롭고 좋지만, 디버그에서 심볼/소스 매칭을 어떻게 하는지 모르겠음. 디버깅 환경이 kdevelop 이 더 편한거 같아서 더이상 시도 하지 않았으나 기록을 위해 남겨둠.
+
+### 설치
+
+[Microsoft Visual Stdio Code](https://code.visualstudio.com/docs/setup/linux)를 참고, vs code 를 설치하고, [c++ 플러그인을 설치](https://code.visualstudio.com/docs/languages/cpp)한다.
+![vs code c++](img/vs_code.png)
+
+
+### 빌드 설정
+
+`ctrl+shift+p` -> `Configure Task Runner` -> `Other` 를 선택, 워킹 디렉토리에 `task.json` 파일을 생성한다. 
+![vs code debug](img/vs_code1.png)
+
+      task.json
+
+      {
+            // See https://go.microsoft.com/fwlink/?LinkId=733558
+            // for the documentation about the tasks.json format
+            "version": "0.1.0",
+            "command": "tools/build.sh",
+            "isShellCommand": true,
+            //"args": [""],
+            "showOutput": "always"
+      }
+
+### 디버그 설정
+![vs code debug](img/vs_code2.png)
+
+      launch.json
+
+      {
+      "version": "0.2.0",
+      "configurations": [
+            {
+                  "name": "(gdb) Launch",
+                  "type": "cppdbg",
+                  "request": "launch",
+                  "program": "${workspaceRoot}/build/responder",            
+                  "args": ["-b https://localhost:8443/conn"],
+                  "stopAtEntry": true,            
+                  "cwd": "${workspaceRoot}",
+                  "environment": [],
+                  "externalConsole": true,
+                  "MIMode": "gdb",
+                  "setupCommands": [
+                  {
+                        "description": "Enable pretty-printing for gdb",
+                        "text": "-enable-pretty-printing",
+                        "ignoreFailures": true
+                  }
+                  ]
+            }
+      ]
+      }
+
+
+
+## Kdevelop IDE
+
+### IDE 설치 
+      
+      $ sudo apt-get install kdevelop
+
+### 빌드       
+
 `./tools/build.sh` 를 사용하지 않기 위해 `sdk-dslink-c\CMakeList.txt` 의 시작 부분을 아래처럼 수정한다.
 
     cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
@@ -41,7 +107,7 @@
 
 `kdevelop IDE > Project > Open/Import project` 를 통해 `sdk-dslink-c\CMakeList.txt` 를 선택한다. 
 
-### Run examples
+### 실행
 
 + exmple\requester
 
@@ -52,12 +118,12 @@
       2017-06-18 07:18:09 INFO [dslink] - Successfully connected to the broker
       2017-06-18 07:18:09 INFO [main] - Connected!
 
-### Debug examples
+### 디버깅
 Projects -> build target 의 컨텍스트 메뉴를 통해 디버깅 가능함
 
 ![debug](img/kdevelop.png)
 
-## Build sdlink-c-iec61850 
+### Build sdlink-c-iec61850 
 
 `sdk-dslink-c` 와 동일하게 `kdevelop > Project > Open/Import project` 를 통해 `dslink-c-iec61850\CMakeList.txt` 를 선택하고 빌드하면 된다.
 `dslink-c-iec61850\CMakeList.txt` 는 `sdk-dslink-c` 를 `dslink-c-iec61850\dslink` 아래에서 찾아 `sdk-dslink-c` 의 `sdk_dslink_c-static` 타겟을 빌드하고, 빌드한 라이브러리를 링크하기 때문에, `sdk-dslink-c dslink` 경로를 `dslink-c-iec61850\dslink` 에 심볼릭 링크를 걸어준다. 
@@ -78,12 +144,6 @@ Projects -> build target 의 컨텍스트 메뉴를 통해 디버깅 가능함
       -rw-rw-r--  1 vmuser vmuser   25 Jun 18 07:15 README.md
       drwxrwxr-x  2 vmuser vmuser 4096 Jun 18 07:15 src/
       vmuser@ubuntu:~/work.dslink_sdk/dslink-c-iec61850$ 
-
-
-
-
-
-
 
 
 
