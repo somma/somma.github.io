@@ -17,18 +17,58 @@
 
 ## SDK 개발을 위한 기본 패키지 설치
   
-  + build 환경구성 
+### 컴파일 툴체인 설치
       
-        $ sudo apt-get build-essential
-        
-  + cloning source code
+      $ sudo apt-get build-essential
+ 
+### 파일 공유 설정
 
-        $ git clone https://github.com/IOT-DSA/sdk-dslink-c
-        $ git clone https://github.com/IOT-DSA/dslink-c-iec61850
-        or
-        $ git clone https://github.com/somma/sdk-dslink-c
-        $ git clone https://github.com/somma/dslink-c-iec61850
-  
+linux 에 samba 패키지를 설치한다.
+
+      vmuser@ubuntu:~$ sudo apt-get install samba
+
+windows 에서 접근할 공유폴더를 생성한다. 
+
+      vmuser@ubuntu:~$ mkdir ~/work.eff
+
+samba 에서 사용할 계정의 패스워드를 설정한다. 
+
+      ; vmuser 는 이미 리눅스상에 존재하는 계정
+      vmuser@ubuntu:~$ sudo smbpasswd -a vmuser
+      New SMB password:
+      Retype new SMB password:
+      Added user vmuser.
+
+`/etc/samba/smb.conf` 파일의 마지막에 아래 내용을 추가한다.
+
+      [work.eff]
+      path = /home/vmuser/work.eff
+      available = yes
+      valid users = vmuser
+      read only = no
+      browsable = yes
+      public = yes
+      writable = yes
+      
+설정값을 적용하기 위해 `samba` 서비스를 재시작한다.      
+
+      vmuser@ubuntu:~$ sudo service smbd restart
+
+Windows 환경에서 `net use` 등의 명령으로 네트워크 공유를 볼륨으로 매핑해서 사용할 수 있다. 
+
+      C:\Users\unsor>net use z: \\10.10.10.130\work.eff
+      '10.10.10.130'의 사용자 이름 입력: vmuser
+      10.10.10.130의 암호 입력:
+      명령을 잘 실행했습니다.
+
+### cloning source code
+
+      $ git clone https://github.com/IOT-DSA/sdk-dslink-c
+      $ git clone https://github.com/IOT-DSA/dslink-c-iec61850
+      or
+      $ git clone https://github.com/somma/sdk-dslink-c
+      $ git clone https://github.com/somma/dslink-c-iec61850
+
 
 ## Visual studio code
 
