@@ -17,8 +17,10 @@
 
 + 지정한 경로에 환경생성 / 삭제
 
-        conda create --prefix c:\bp
-        conda remove --prefix c:\bp --all
+        conda create --prefix c:\bp\env
+        conda remove --prefix c:\bp\env --all
+        conda create --prefix c:\bp\env python=3.4 
+        conda create --prefix .\env python=3.4 
 
 + 환경 활성화/비활성화
 
