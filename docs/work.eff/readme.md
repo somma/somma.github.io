@@ -193,3 +193,74 @@ Projects -> build target 의 컨텍스트 메뉴를 통해 디버깅 가능함
       drwxrwxr-x  2 vmuser vmuser 4096 Jun 18 07:15 src/
       vmuser@ubuntu:~/work.dslink_sdk/dslink-c-iec61850$ 
 
+
+
+## sdk-dslink-python ( Windows )
+
+### 파이썬 환경 설정 
+
+[anaconda](https://www.continuum.io/downloads) 를 이용해서 파이썬 2.7.10 버전의 가상 환경을 생성한다. 
+
+      d:\work.cisco-eff\source_code\sdk-dslink-python>conda create --prefix .\env python=2.7.10
+      Fetching package metadata ...........
+      Solving package specifications: .
+
+      Package plan for installation in environment d:\work.cisco-eff\source_code\sdk-dslink-python\env:
+
+      The following NEW packages will be INSTALLED:
+
+      msvc_runtime: 1.0.1-vc9_0   [vc9]
+      pip:          9.0.1-py27_1
+      python:       2.7.10-5
+      setuptools:   27.2.0-py27_1
+      wheel:        0.29.0-py27_0
+
+      Proceed ([y]/n)?
+
+      #
+      # To activate this environment, use:
+      # > activate d:\work.cisco-eff\source_code\sdk-dslink-python\env
+      #
+      # To deactivate this environment, use:
+      # > deactivate d:\work.cisco-eff\source_code\sdk-dslink-python\env
+      #
+      # * for power-users using bash, you must source
+      #
+
+
+생성된 가상환경을 활성화하고, [dslink python](https://pypi.python.org/pypi/dslink) 패키지를 설치한다.      
+
+      d:\work.cisco-eff\source_code\sdk-dslink-python>activate ./env
+
+      (./env) d:\work.cisco-eff\source_code\sdk-dslink-python>pip install dslink
+      Collecting dslink
+      Using cached dslink-0.6.23.tar.gz
+      Collecting autobahn==0.15.0 (from dslink)
+      Using cached autobahn-0.15.0-py2.py3-none-any.whl
+      Collecting pyelliptic==1.5.7 (from dslink)
+      Using cached pyelliptic-1.5.7.tar.gz
+      Collecting requests==2.10.0 (from dslink)
+      Using cached requests-2.10.0-py2.py3-none-any.whl
+      Collecting zope.interface==4.2.0 (from dslink)
+      Downloading zope.interface-4.2.0-cp27-cp27m-win_amd64.whl (130kB)
+      100% |################################| 133kB 575kB/s
+      Collecting Twisted==16.3.0 (from dslink)
+      Downloading Twisted-16.3.0-cp27-none-win_amd64.whl (3.0MB)
+      100% |################################| 3.0MB 485kB/s
+      Collecting txaio>=2.5.1 (from autobahn==0.15.0->dslink)
+      Using cached txaio-2.8.0-py2.py3-none-any.whl
+      Collecting six>=1.10.0 (from autobahn==0.15.0->dslink)
+      Downloading six-1.10.0-py2.py3-none-any.whl
+      Requirement already satisfied: setuptools in .\env\lib\site-packages\setuptools-27.2.0-py2.7.egg (from zope.interface==4.2.0->dslink)
+      Building wheels for collected packages: dslink, pyelliptic
+      Running setup.py bdist_wheel for dslink ... done
+      Stored in directory: C:\Users\unsor\AppData\Local\pip\Cache\wheels\aa\87\e5\fafed2cfca688cfdfa79e25a4331ca5b614e44ba19996c8c3f
+      Running setup.py bdist_wheel for pyelliptic ... done
+      Stored in directory: C:\Users\unsor\AppData\Local\pip\Cache\wheels\cc\fb\8c\8b7424acda32bb01e0834723a5819a48b923442bb575805863
+      Successfully built dslink pyelliptic
+      Installing collected packages: six, txaio, autobahn, pyelliptic, requests, zope.interface, Twisted, dslink
+      Successfully installed Twisted-16.3.0 autobahn-0.15.0 dslink-0.6.23 pyelliptic-1.5.7 requests-2.10.0 six-1.10.0 txaio-2.8.0 zope.interface-4.2.0
+
+      (./env) d:\work.cisco-eff\source_code\sdk-dslink-python>
+
+
