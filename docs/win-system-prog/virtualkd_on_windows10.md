@@ -1,4 +1,4 @@
-# Trouble shooting VirtualKD on Windows 10
+# VirtualKD on Windows 10
 
 가상머신(Debuggee)에서 vminstall.exe 를 설치했고 디버그 모드로 부팅이 되었음에도 불구하고, WinDbg 연결이 안되는 경우가 있다. 
 
