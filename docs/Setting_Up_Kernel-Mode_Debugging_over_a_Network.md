@@ -1,65 +1,149 @@
-# 네트워크 케이블로 커널디버깅 환경 구성하기
----
-+ host
-	- debugger 가 실행중인 PC
-	- XP 이상 
+# 네트워크 디버깅 환경 설정하기
 
-+ target 
-	- debugging 당할 pc
-	- Windows 8 이상 
+1. bcdedit 환경 보기
 
-+ kenel mode debugging over network 이 좋은 점
-	- host 와 target 이 local network 에 있기만 하면 됨
-	- 하나의 host 에서 여러 target 을 디버깅하는데 용이
-	- network cable 은 보통 준비되어있고, 저렴함
-	- 두 컴퓨터에는 1394 나 serial 보다는 ethernet adapter 가 달려있는 경우가 많을거다.
+		C:\>bcdedit
+
+		Windows Boot Manager
+		--------------------
+		identifier              {bootmgr}
+		device                  partition=\Device\HarddiskVolume1
+		description             Windows Boot Manager
+		locale                  en-US
+		inherit                 {globalsettings}
+		default                 {current}
+		resumeobject            {4f573204-f5ab-11e7-b195-c37af9c40bc0}
+		displayorder            {current}
+		toolsdisplayorder       {memdiag}
+		timeout                 30
+
+		Windows Boot Loader
+		-------------------
+		identifier              {current}
+		device                  partition=C:
+		path                    \Windows\system32\winload.exe
+		description             Windows 10
+		locale                  en-US
+		inherit                 {bootloadersettings}
+		recoverysequence        {4f573206-f5ab-11e7-b195-c37af9c40bc0}
+		displaymessageoverride  Recovery
+		recoveryenabled         Yes
+		allowedinmemorysettings 0x15000075
+		osdevice                partition=C:
+		systemroot              \Windows
+		resumeobject            {4f573204-f5ab-11e7-b195-c37af9c40bc0}
+		nx                      OptIn
+		bootmenupolicy          Standard
+
+1. `debug` 엔트리 생성
+
+		C:\>bcdedit /copy {current} /d "debug"
+		The entry was successfully copied to {4f573208-f5ab-11e7-b195-c37af9c40bc0}.
+
+1. `testsigning` mode 를 활성화 (참고: [bcdedit /set](https://docs.microsoft.com/en-us/windows-hardware/drivers/devtest/bcdedit--set))
+
+		--bcdedit /set nointegritychecks on
+		C:\>bcdedit /set {4f573208-f5ab-11e7-b195-c37af9c40bc0} testsigning on
+		The operation completed successfully.
+
+1. `debug` 엔트리를 default 부트 엔트리로 변경
+
+		bcdedit /default {4f573208-f5ab-11e7-b195-c37af9c40bc0}
+
+1. `debug` 엔트리의 디버깅 모드 활성화 
+
+		C:\>bcdedit /debug {4f573208-f5ab-11e7-b195-c37af9c40bc0} on
+		The operation completed successfully.
+
+1. 네트워크 디버깅 환경 설정 (참고: [Setting Up Kernel-Mode Debugging over a Network Cable Manually](https://goo.gl/6mepWb))
+
+		C:\>bcdedit /dbgsettings net hostip:192.168.0.3 port:50000
+		Key=3w0dshz7rba4.315r7m1sq5a10.3kxzq2so7zx6o.2v9anh20hgj9c
+
+	- hostip: debugger 의 ip
+	- port: debugger 의 listen port
+		- 49152 ~ 65532 범위에서 맘대로
+		- 선택한 port 는 host 컴퓨터에서 debugger 가 사용함
+		- 다른 프로그램이 쓰지 않는 포트
+
+	- key: debugger 에서 인증에 사용하는 key 값
+
+1. bcdedit 환경 보기
+
+	부트 엔트리 정보 
+
+		C:\>bcdedit /v
+
+		Windows Boot Manager
+		--------------------
+		identifier              {9dea862c-5cdd-4e70-acc1-f32b344d4795}
+		device                  partition=\Device\HarddiskVolume1
+		description             Windows Boot Manager
+		locale                  en-US
+		inherit                 {7ea2e1ac-2e61-4728-aaa3-896d9d0a9f0e}
+		default                 {4f573208-f5ab-11e7-b195-c37af9c40bc0}
+		resumeobject            {4f573204-f5ab-11e7-b195-c37af9c40bc0}
+		displayorder            {4f573205-f5ab-11e7-b195-c37af9c40bc0}
+								{4f573208-f5ab-11e7-b195-c37af9c40bc0}
+		toolsdisplayorder       {b2721d73-1db4-4c62-bf78-c548a880142d}
+		timeout                 30
+
+		Windows Boot Loader
+		-------------------
+		identifier              {4f573205-f5ab-11e7-b195-c37af9c40bc0}
+		device                  partition=C:
+		path                    \Windows\system32\winload.exe
+		description             Windows 10
+		locale                  en-US
+		inherit                 {6efb52bf-1766-41db-a6b3-0ee5eff72bd7}
+		recoverysequence        {4f573206-f5ab-11e7-b195-c37af9c40bc0}
+		displaymessageoverride  Recovery
+		recoveryenabled         Yes
+		allowedinmemorysettings 0x15000075
+		osdevice                partition=C:
+		systemroot              \Windows
+		resumeobject            {4f573204-f5ab-11e7-b195-c37af9c40bc0}
+		nx                      OptIn
+		bootmenupolicy          Standard
+
+		Windows Boot Loader
+		-------------------
+		identifier              {4f573208-f5ab-11e7-b195-c37af9c40bc0}
+		device                  partition=C:
+		path                    \Windows\system32\winload.exe
+		description             debug									//<!
+		locale                  en-US
+		inherit                 {6efb52bf-1766-41db-a6b3-0ee5eff72bd7}
+		recoverysequence        {4f573206-f5ab-11e7-b195-c37af9c40bc0}
+		displaymessageoverride  Recovery
+		recoveryenabled         Yes
+		testsigning             Yes										//<!
+		allowedinmemorysettings 0x15000075
+		osdevice                partition=C:
+		systemroot              \Windows
+		resumeobject            {4f573204-f5ab-11e7-b195-c37af9c40bc0}
+		nx                      OptIn
+		bootmenupolicy          Standard
+		debug                   Yes										//<!
 
 
-## 네트워크 디버깅에 	사용할 포트 선택하기 
-- 49152 ~ 65532 범위에서 맘대로
-- 선택한 port 는 host 컴퓨터에서 debugger 가 사용함
-- 다른 프로그램이 쓰지 않는 포트
+	디버깅 설정 보기 
 
+		C:\>bcdedit /dbgsettings
+		key                     3w0dshz7rba4.315r7m1sq5a10.3kxzq2so7zx6o.2v9anh20hgj9c
+		debugtype               NET
+		hostip                  192.168.0.3		//<! debugger 의 IP 주소
+		port                    50000
+		dhcp                    Yes
+		The operation completed successfully.
+		
+1. `debugger` 에서 windbg 실행 후 `debuggee` 의 접속 대기
 
-## target 설정
-1. target 의 network adapter 가 네트워크 디버깅을 지원하는지 확인
-1. CAT5 나 그보다 좋은 네트워크 케이블로 hub 나 switch 에 연결
-	- crossover cable 은 안됨
-1. 관리자 권한으로 command prompt 를 띄우고, 아래 명령을 실행 
-	- `w.x.y.z` 는 host 의 ip
-	- `n` 은 선택한 port
-	
-			bcdedit /debug on
-			bcdedit /dbgsettings net hostip:w.x.y.z port:n
-			
-1. bcdedit 이 자동으로 생성한 key 를 출력하면, 해당 키를 usb 같은 곳에 잘 저장해둠. 이 키는 나중에 host 에서 debugging session 을 시작할때 필요함 
-	- key 를 직접 만들어서 쓸수도 있지만 자동으로 생성된 키를 사용하기를 강추함
+	- host 에서 `WinDbg` 를 실행하고, `File` -> `Kernel Debug` -> `Net` 탭 선택, port 번호와 key 입력 후 OK
+	- 아래 명령을 이용해서 실행해도 됨
+			windbg -k net:port=n,key=Key 
+	- WinDbg 관련 방화벽 알람이 있으면 허용해줌
 
-1. 만일 target 에 network adapter 가 여러개인 경우 
-	- device manager 를 이용, 디버깅에 이용할 어댑터의 PCI bus, device, function number 를 확인하고
-	+ 권한 상승된 cmd 를 통해서 아래 명령을 실행한다 (`b`, `d`, `f` 는 bus number, device number, function number)
+1. `debuggee` 리부트
 
-			bcdedit /set "{dbgsettings}" busparams b.d.f
-
-1. target 리붓
-
-
-## host 설정
-crossover cable 말고, CAT5 나 그거보다 좋은 케이블로 hub 또는 switch 에 연결한다. 
-
-## debugging 세션 시작하기 
-### WinDbg 이용
-1. host 에서 `WinDbg` 를 실행하고, `File` -> `Kernel Debug` -> `Net` 탭 선택, port 번호와 key 입력 후 OK
-1. 아래 명령을 이용해서 실행해도 됨
-		windbg -k net:port=n,key=Key 
-1. WinDbg 관련 방화벽 알람이 있으면 허용해줌
-
-### KD 이용
-1. host 에서 아래 명령 실행 
-		kd -k net:port=n,key=Key
-1. KD 관련 방화벽 알람이 있으면 허용해줌
-
-## REF
-+ [Setting Up Kernel-Mode Debugging over a Network Cable Manually](https://goo.gl/6mepWb)
-
-
+	> shutdown -r -t 0
